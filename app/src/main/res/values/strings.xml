@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lumis</string>
+
+    <!-- Health Connect permissions -->
+    <string name="health_connect_permission_rationale">
+        O Lumis lê seus dados de sono do Health Connect para calcular o melhor horário de acordar
+        e exibir o estado do personagem baseado na qualidade do seu sono da semana.
+    </string>
+
+    <!-- Alarm -->
+    <string name="alarm_channel_name">Alarme Lumis</string>
+    <string name="alarm_notification_title">⏰ Hora de acordar!</string>
+    <string name="alarm_notification_text">Você completou seus ciclos de sono</string>
+    <string name="alarm_dismiss">Dispensar</string>
+</resources>
