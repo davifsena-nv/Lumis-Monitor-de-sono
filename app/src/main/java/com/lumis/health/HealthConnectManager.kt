@@ -22,6 +22,10 @@ class HealthConnectManager @Inject constructor(
         return HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE
     }
 
+    fun needsProviderUpdate(): Boolean {
+        return HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED
+    }
+
     suspend fun hasPermissions(): Boolean {
         if (!isAvailable()) return false
         val granted = client.permissionController.getGrantedPermissions()

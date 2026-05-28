@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <array name="health_permissions">
-        <item>androidx.health.permission.SleepSession.READ</item>
-    </array>
-</resources>
+<permissions xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="androidx.health.permission.SleepSession.READ" />
+</permissions>

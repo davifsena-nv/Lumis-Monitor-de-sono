@@ -1,5 +1,8 @@
 package com.lumis.ui.home
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.SleepSessionRecord
+import com.lumis.health.HealthConnectManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,6 +39,15 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val requestPermissions = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) { granted ->
+        if (HealthPermission.getReadPermission(SleepSessionRecord::class) in granted) {
+            viewModel.loadData()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -83,7 +100,18 @@ fun HomeScreen(
                         lumisState = uiState.lumisState,
                     )
                     is SleepDataState.NoData -> NoDataCard()
-                    is SleepDataState.NoPermission -> PermissionCard()
+                    is SleepDataState.NoPermission -> PermissionCard(
+                        onRequestPermission = {
+                            requestPermissions.launch(HealthConnectManager.PERMISSIONS)
+                        }
+                    )
+                    is SleepDataState.HealthConnectNeedsUpdate -> NeedsUpdateCard(
+                        onUpdate = {
+                            val intent = Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=com.google.android.apps.healthdata"))
+                            context.startActivity(intent)
+                        }
+                    )
                     is SleepDataState.HealthConnectUnavailable -> UnavailableCard()
                     is SleepDataState.Loading -> LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
@@ -260,17 +288,60 @@ private fun NoDataCard() {
 }
 
 @Composable
-private fun PermissionCard() {
+private fun PermissionCard(onRequestPermission: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
-        Text(
-            modifier = Modifier.padding(16.dp),
-            text = "Permissão do Health Connect necessária para ler dados de sono.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onErrorContainer,
-        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Permissão necessária",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Text(
+                text = "Autorize o Lumis a ler seus dados de sono do Health Connect.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onRequestPermission,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Conceder permissão")
+            }
+        }
+    }
+}
+
+@Composable
+private fun NeedsUpdateCard(onUpdate: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Atualização necessária",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Text(
+                text = "O Health Connect precisa ser instalado ou atualizado para o Lumis funcionar.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onUpdate,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Atualizar Health Connect")
+            }
+        }
     }
 }
 

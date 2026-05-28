@@ -8,6 +8,7 @@ sealed class SleepDataState {
     object NoPermission : SleepDataState()
     object NoData : SleepDataState()
     object HealthConnectUnavailable : SleepDataState()
+    object HealthConnectNeedsUpdate : SleepDataState()
     data class Success(
         val sessions: List<SleepSessionRecord>,
         val weeklyScore: Int,

@@ -43,6 +43,10 @@ class HomeViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
+            if (healthConnectManager.needsProviderUpdate()) {
+                _uiState.update { it.copy(sleepDataState = SleepDataState.HealthConnectNeedsUpdate) }
+                return@launch
+            }
             if (!healthConnectManager.isAvailable()) {
                 _uiState.update { it.copy(sleepDataState = SleepDataState.HealthConnectUnavailable) }
                 return@launch

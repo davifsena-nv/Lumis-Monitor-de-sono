@@ -16,7 +16,7 @@ class AlarmScheduler @Inject constructor(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     fun scheduleAlarm(wakeTime: Instant) {
-        val pendingIntent = buildMainPendingIntent()
+        val pendingIntent = buildMainPendingIntent() ?: return
         val alarmClockInfo = AlarmManager.AlarmClockInfo(wakeTime.toEpochMilli(), pendingIntent)
         alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
     }
@@ -36,7 +36,7 @@ class AlarmScheduler @Inject constructor(
             REPEAT_REQUEST_CODE,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+        ) ?: return
         val triggerAt = System.currentTimeMillis() + REPEAT_INTERVAL_MS
         val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerAt, pendingIntent)
         alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)

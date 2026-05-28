@@ -51,15 +51,9 @@
 
 ---
 
-## Próximo passo obrigatório antes de compilar
+## Status atual
 
-O projeto foi criado com todos os arquivos de código, mas **ainda precisa do `gradle-wrapper.jar`** (binário não criável por código).
-
-**Passos para compilar:**
-1. Abrir o Android Studio
-2. `File → Open` → selecionar a pasta `Lumis - Monitor de sono`
-3. O AS vai detectar o `build.gradle.kts` e sincronizar automaticamente (baixa o Gradle wrapper)
-4. Após sync: `Run → Run 'app'` com o celular conectado via USB
+App instalado e rodando no Poco. Próximo passo: conceder permissão do Health Connect e sincronizar Galaxy Fit 3 com Samsung Health para ter dados de sono disponíveis.
 
 ---
 
@@ -70,6 +64,14 @@ O projeto foi criado com todos os arquivos de código, mas **ainda precisa do `g
 - `SKILL.md` movido para `.claude/skills/lumis/SKILL.md` — agora é auto-ativado como skill
 - Pasta `memory/` criada localmente no projeto para rastrear progresso entre sessões
 - Skill `/salvar` atualizada para registrar notas de sessão automaticamente ao fazer commit
+
+### 2026-05-28 (sessão 3 — correções de build e Health Connect)
+- Atualizado AGP `8.2.2` → `8.9.1`, Gradle `8.4` → `8.11.1`, `compileSdk/targetSdk` 34 → 36 (exigência do `connect-client:1.1.0`)
+- App instalado com sucesso no Poco e rodando
+- Adicionado fluxo de solicitação de permissão do Health Connect na `HomeScreen` via `rememberLauncherForActivityResult`
+- Adicionado novo estado `HealthConnectNeedsUpdate` + card com botão "Atualizar Health Connect" que abre Play Store
+- Corrigido `health_permissions.xml`: formato errado (`<array>`) e referência errada (`@array`) → agora usa formato `<permissions>` em `res/xml/` com referência `@xml/health_permissions`
+- Corrigidas constantes de fase do sono (`STAGE_TYPE_DEEP/REM/LIGHT` sem prefixo `SLEEPING_`) e null-safety no `AlarmScheduler`
 
 ### 2026-05-28 (sessão 2 — desenvolvimento)
 - Criados **35 arquivos** cobrindo Fases 1, 2 e 3 completas:
